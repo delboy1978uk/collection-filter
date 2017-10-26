@@ -24,9 +24,6 @@ class PaginationFilter implements FilterInterface
             return $collection;
         }
 
-        $results = new ArrayIterator();
-        $collection->rewind();
-
         $totalRecords = $collection->count();
         $resultsOffset = ($this->page * $this->numPerPage) - $this->numPerPage;
         $resultsEndOffset = $resultsOffset + $this->numPerPage;
@@ -34,6 +31,17 @@ class PaginationFilter implements FilterInterface
         if ($resultsOffset > $totalRecords) {
             throw new LogicException('There aren\'t that many pages for this result set.');
         }
+
+        $results = $this->getResults($collection, $totalRecords, $resultsOffset, $resultsEndOffset);
+
+        return $results;
+    }
+
+    private function getResults(ArrayIterator $collection, int $totalRecords, int $resultsOffset, int $resultsEndOffset)
+    {
+        $results = new ArrayIterator();
+
+        $collection->rewind();
 
         for ($x = 0; $x < $totalRecords; $x ++) {
             if ($collection->valid()) {
@@ -44,9 +52,9 @@ class PaginationFilter implements FilterInterface
                 $collection->next();
             }
         }
-
         return $results;
     }
+
 
     /**
      * @return int
