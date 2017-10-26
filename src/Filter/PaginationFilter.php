@@ -14,21 +14,16 @@ class PaginationFilter implements FilterInterface
     private $numPerPage;
 
     /**
-     * PaginationFilter constructor.
-     */
-    public function __construct()
-    {
-        // set some defaults
-        $this->page = 1;
-        $this->numPerPage = 20;
-    }
-
-    /**
      * @param ArrayIterator $collection
      * @return ArrayIterator
      */
     public function filter(ArrayIterator $collection): ArrayIterator
     {
+        // If pagination wasnt set, dont use it!
+        if (!$this->page || !$this->numPerPage) {
+            return $collection;
+        }
+
         $results = new ArrayIterator();
         $collection->rewind();
 
@@ -43,7 +38,7 @@ class PaginationFilter implements FilterInterface
         for ($x = 0; $x < $totalRecords; $x ++) {
             if ($collection->valid()) {
                 $row = $collection->current();
-                if ($x >= $resultsOffset && $x <= $resultsEndOffset) {
+                if ($x >= $resultsOffset && $x < $resultsEndOffset) {
                     $results->append($row);
                 }
                 $collection->next();

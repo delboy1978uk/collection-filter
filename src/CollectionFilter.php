@@ -16,6 +16,7 @@ class CollectionFilter
 
     public function __construct()
     {
+        $this->filterCollection = new FilterCollection();
         $this->paginationFilter = new PaginationFilter();
     }
 
@@ -35,6 +36,11 @@ class CollectionFilter
     {
         $this->filterCollection = $filterCollection;
         return $this;
+    }
+
+    public function filterArrayResults(array $results) : array
+    {
+        return (array) $this->filterResults(new ArrayIterator($results));
     }
 
     /**
