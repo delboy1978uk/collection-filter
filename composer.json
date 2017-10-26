@@ -1,0 +1,22 @@
+{
+    "name": "delboy1978uk/collection-filter",
+    "description": "Filter your arrays and collections with this extendable filter class",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Derek Stephen McLean",
+            "email": "delboy1978uk@gmail.com"
+        }
+    ],
+    "require": {
+    },
+    "require-dev":{
+        "codeception/codeception":"dev-master"
+    },
+    "autoload":{
+        "psr-4":{
+            "Del\\Filter\\":"src/",
+            "DelTesting\\Filter\\":"tests/unit"
+        }
+    }
+}
