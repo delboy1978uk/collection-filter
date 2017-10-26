@@ -44,15 +44,20 @@ class PaginationFilter implements FilterInterface
         $collection->rewind();
 
         for ($x = 0; $x < $totalRecords; $x ++) {
-            if ($collection->valid()) {
-                $row = $collection->current();
-                if ($x >= $resultsOffset && $x < $resultsEndOffset) {
-                    $results->append($row);
-                }
-                $collection->next();
-            }
+            $this->handleRow($x, $resultsOffset, $resultsEndOffset, $collection, $results);
         }
         return $results;
+    }
+
+    private function handleRow(int $x, int $resultsOffset, $resultsEndOffset, ArrayIterator $collection, ArrayIterator $results)
+    {
+        if ($collection->valid()) {
+            $row = $collection->current();
+            if ($x >= $resultsOffset && $x < $resultsEndOffset) {
+                $results->append($row);
+            }
+            $collection->next();
+        }
     }
 
 
