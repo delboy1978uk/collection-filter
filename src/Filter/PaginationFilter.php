@@ -13,6 +13,17 @@ class PaginationFilter implements FilterInterface
     /** @var int $numPerPage */
     private $numPerPage;
 
+    /** @var int $totalRecords */
+    private $totalRecords;
+
+    /** @var ArrayIterator $collection */
+    private $collection;
+
+    /** @var int $resultsOffset */
+    private $resultsOffset;
+
+    private $resultsEndOffset;
+
     /**
      * @param ArrayIterator $collection
      * @return ArrayIterator
@@ -24,39 +35,41 @@ class PaginationFilter implements FilterInterface
             return $collection;
         }
 
-        $totalRecords = $collection->count();
-        $resultsOffset = ($this->page * $this->numPerPage) - $this->numPerPage;
-        $resultsEndOffset = $resultsOffset + $this->numPerPage;
+        $this->collection = $collection;
+        $this->totalRecords = $collection->count();
 
-        if ($resultsOffset > $totalRecords) {
+        $this->resultsOffset = ($this->page * $this->numPerPage) - $this->numPerPage;
+        $this->resultsEndOffset = $this->resultsOffset + $this->numPerPage;
+
+        if ($this->resultsOffset > $this->totalRecords) {
             throw new LogicException('There aren\'t that many pages for this result set.');
         }
 
-        $results = $this->getResults($collection, $totalRecords, $resultsOffset, $resultsEndOffset);
+        $results = $this->getResults();
 
         return $results;
     }
 
-    private function getResults(ArrayIterator $collection, int $totalRecords, int $resultsOffset, int $resultsEndOffset)
+    private function getResults()
     {
         $results = new ArrayIterator();
 
-        $collection->rewind();
+        $this->collection->rewind();
 
-        for ($x = 0; $x < $totalRecords; $x ++) {
-            $this->handleRow($x, $resultsOffset, $resultsEndOffset, $collection, $results);
+        for ($x = 0; $x < $this->totalRecords; $x ++) {
+            $this->handleRow($x, $results);
         }
         return $results;
     }
 
-    private function handleRow(int $x, int $resultsOffset, $resultsEndOffset, ArrayIterator $collection, ArrayIterator $results)
+    private function handleRow(int $x, ArrayIterator $results)
     {
-        if ($collection->valid()) {
-            $row = $collection->current();
-            if ($x >= $resultsOffset && $x < $resultsEndOffset) {
+        if ($this->collection->valid()) {
+            $row = $this->collection->current();
+            if ($x >= $this->resultsOffset && $x < $this->resultsEndOffset) {
                 $results->append($row);
             }
-            $collection->next();
+            $this->collection->next();
         }
     }
 
@@ -95,5 +108,16 @@ class PaginationFilter implements FilterInterface
     {
         $this->numPerPage = $numPerPage;
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalPages() : int
+    {
+        if (!$this->collection instanceof ArrayIterator) {
+            throw new LogicException('You must first pass your collection in to filter');
+        }
+        return ceil(($this->totalRecords / $this->numPerPage));
     }
 }

@@ -40,7 +40,7 @@ class CollectionFilter
 
     public function filterArrayResults(array $results) : array
     {
-        return (array) $this->filterResults(new ArrayIterator($results));
+        return $this->filterResults(new ArrayIterator($results))->getArrayCopy();
     }
 
     /**

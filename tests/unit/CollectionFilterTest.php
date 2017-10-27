@@ -106,4 +106,34 @@ class CollectionFilterTest extends Test
         $bang = 'oops this isnt a filter';
         $this->filter->getFilterCollection()->append($bang);
     }
+
+    public function testGetTotalPages()
+    {
+        $pager = $this->filter->getPaginationFilter();
+        $pager->setPage(2)
+            ->setNumPerPage(3);
+
+        $this->assertEquals(2,$pager->getPage());
+        $this->assertEquals(3,$pager->getNumPerPage());
+
+        $data = [
+            1, 3, 5, 7, 3, 5, 2, 6, 4, 5, 8, 1, 2, 9,
+        ];
+
+        $this->filter->filterArrayResults($data);
+        $totalPages = $this->filter->getPaginationFilter()->getTotalPages();
+
+        $this->assertEquals(5, $totalPages);
+    }
+
+    public function testGetTotalPagesThrowsException()
+    {
+        $this->expectException(LogicException::class);
+
+        $pager = $this->filter->getPaginationFilter();
+        $pager->setPage(2)
+            ->setNumPerPage(3)
+            ->getTotalPages()
+        ;
+    }
 }

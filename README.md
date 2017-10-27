@@ -22,6 +22,10 @@ $filter->getPaginationFilter()
 $results = $filter->filterArrayResults($data);
 
 // returns array[4,5,6] 
+
+$totalPages = $filter->getPaginationFilter()->getTotalPages();
+
+// returns 3
 ```
 You can also use any class implementing ArrayIterator:
 ```php
@@ -78,5 +82,17 @@ class NumberSixFilter implements FilterInterface
 }
 
 ``` 
+Then to add your new filter:
+```php
+<?php
+
+use Del\Filter\CollectionFilter;
+use Your\CustomFilter;
+
+$filter = new CollectionFilter();
+$customFilter = new CustomFilter();
+
+$filter->getFilterCollection()->append($customFilter);
+```
 ## contributing
 Feel free to add issues in Github, or pick up an issue and send a pull request! All contributions welcome!
